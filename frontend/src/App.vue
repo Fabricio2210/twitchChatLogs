@@ -2,7 +2,7 @@
   <div class="container">
     <div>
        <navBar class="d-none d-lg-block py-4" />
-        <navMobile class="d-sm-block d-md-none py-1" />
+        <navMobile class="d-sm-block d-md-none py-5" />
     </div>
      <keep-alive include="home">
     <router-view/>

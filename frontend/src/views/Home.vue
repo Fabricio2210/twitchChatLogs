@@ -4,7 +4,7 @@
         <FormSearch class="animated fadeIn" @info-video="passData" v-if="ifNoData"/>
       </b-col>
       <b-col class="pt-2">
-        <TableContent v-if="ifData" :info2.sync="info" :page="page" :limit="limit" :formUserName="formUserName" :formMessage="formMessage" :formHour="formHour" :dateFrom="dateFrom" :dateEnd="dateEnd" :totalPages2="totalPages" :totalResults="totalResults" :subject="subject" />
+        <TableContent v-if="ifData" :info2.sync="info" :page="page" :limit="limit" :formUserName="formUserName" :formMessage="formMessage" :formHour="formHour" :dateFrom="dateFrom" :dateEnd="dateEnd" :totalPages2="totalPages" :totalResults="totalResults" :subject="subject" :queryUsername="queryUsername" :queryMessage="queryMessage" />
       </b-col>
     
   </div>
@@ -35,7 +35,9 @@ export default {
       dateEnd: null,
       totalPages: null,
       totalResults: null,
-      subject: null
+      subject: null,
+      queryUsername: null,
+      queryMessage: null
     }
   },
   methods:{
@@ -52,6 +54,8 @@ export default {
       this.totalResults = data[9]
       this.ifNoData = false;
       this.subject = data[10],
+      this.queryUsername = data[11],
+      this.queryMessage = data[12],
       this.ifData = true;
     }
   }

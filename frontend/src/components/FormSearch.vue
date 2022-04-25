@@ -2,9 +2,7 @@
 <div>
   <Loading v-if="isLoading" />
   <b-row v-if="!isLoading">
-    <b-col md="12" offset-md="2" class="pt-5">
-      <h2 class="subTitulo d-none d-lg-block pb-3 pr-5">An archive from twitch chat logs.</h2>
-       <p class="subTitulosm d-sm-block d-md-none">An archive from twitch chat logs.</p>
+    <b-col md="12" offset-md="2" class="paddingForm">
       <b-form :class="[{animated:isError},{shake: isError}]"> 
       <b-col md="6" offset-md="1">
           <b-form-group
@@ -21,6 +19,17 @@
             placeholder="Username"
             class="my-3"
           ></b-form-input>
+          <div>
+    <b-form-group label="Select the type of username search">
+      <b-form-radio-group
+        id="radio-group-1"
+        v-model="selected2"
+        :options="options2"
+        :aria-describedby="ariaDescribedby"
+        name="radio-options1"
+      ></b-form-radio-group>
+    </b-form-group>
+  </div>
           <b-form-input
             id="input-1"
             v-model="form.message"
@@ -28,16 +37,16 @@
             placeholder="Message"
             class="my-3"
           ></b-form-input>
+           <b-form-group label="Select the type of message search">
+      <b-form-radio-group
+        id="radio-group-2"
+        v-model="selected3"
+        :options="options3"
+        :aria-describedby="ariaDescribedby"
+        name="radio-options2"
+      ></b-form-radio-group>
+    </b-form-group>
            <b-form-select @change="chooseChannel" class="mb-3" v-model="selected"  :options="options"></b-form-select>
-          <label for="input-time">Pick a timestamp</label>
-          <b-form-input
-            id="input-time"
-            v-model="form.hour"
-            type="time"
-            placeholder="Time"
-            step="1"
-           
-          ></b-form-input>
       
           <b-row class="d-flex justify-content-between">
             <b-col md="6"   class="mb-3">
@@ -82,7 +91,18 @@
          options:[
           { value: '', text: 'Please select a channel:' },
           { value: 'DSP', text: 'Darksydephil' },
-           { value: 'Projared', text: 'Projared' }
+          { value: 'Projared', text: 'Projared' }
+        ],
+        selected2:'match',
+        options2:[
+          {value: 'match', text:'Match'},
+          {value: 'prefix', text:'Prefix'},
+          {value: 'fuzz', text:'Similar Matches'}
+        ],
+        selected3:"matchPhrase",
+         options3:[
+          {value: 'matchPhrase', text:'Match phrase'},
+          {value: 'matchPhrasePrefix', text:'Match Phrase Prefix'},
         ],
         show: true,
         isError: false,
@@ -91,7 +111,7 @@
         fullPage: true,
         isSelected: true,
         buttonText: "Choose a channel first",
-        page: 1,
+        page: 0,
         limit: 51
       }
     },
@@ -131,11 +151,14 @@
           dateEnd: this.form.dateEnd
         },{params:{
           page: this.page,
-          limit: this.limit
+          limit: this.limit,
+          userName: this.selected2,
+          message: this.selected3
         }})
         .then((data)=>{
+          console.log(data.data.data)
            this.info = data.data.data
-           this.$emit('info-video',this.info,this.page,this.limit,this.form.userName,this.form.message,this.form.hour,this.form.dateFrom,this.form.dateEnd,data.data.totalPages,data.data.totalResults,this.selected)
+           this.$emit('info-video',this.info,this.page,this.limit,this.form.userName,this.form.message,this.form.hour,this.form.dateFrom,this.form.dateEnd,data.data.totalPages,data.data.totalResults,this.selected,this.selected2, this.selected3)
            this.isLoading = false
            
         })

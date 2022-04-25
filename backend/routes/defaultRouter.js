@@ -1,21 +1,15 @@
-const LogData = require('../db/schemas/LogSchema')
-const paginationInfo = require('../helpers/paginationInfo.js.js')
-const queryLogs = require('../helpers/query')
-const countDocuments = require('../helpers/countDocuments');
-const logRawInfo = require('../helpers/logRawInfo');
-const parseLogInfo = require('../helpers/parseLogInfo');
-const logAnswer = require('../helpers/logAnswer');
+const paginationInfo = require('../../helpers/chatLogs/paginationInfo.js');
+const queryLogs = require('../../helpers/chatLogs/query');
+const logRawInfo = require('../../helpers/chatLogs/logRawInfo');
+const parseLogInfo = require('../../helpers/chatLogs/parseLogInfo');
+const logAnswer = require('../../helpers/chatLogs/logAnswer');
 
 const defaultRouter = async (router,subject) =>{
-    console.log(subject)
     router.post(`/${subject}`,async (req,res)=>{
         let page = parseInt(req.query.page);
         let limit = parseInt(req.query.limit);
         let query = queryLogs(req, subject);
         let {
-          startIndex,
-          endIndex,
-          totalResults,
           nextPage,
           previousPage,
         } = paginationInfo(page, limit);
@@ -24,21 +18,19 @@ const defaultRouter = async (router,subject) =>{
                 msg:'Fill at least one field'
             })
         }else{
-            let count = await countDocuments(query, LogData, totalResults);
-            let rawData = await logRawInfo(LogData, query, limit, startIndex);
-            let arrayDataLog = await parseLogInfo(rawData);
+            let rawData = await logRawInfo(query,page,limit,req);
+            let arrayDataLog =  parseLogInfo(rawData.data);
             logAnswer(
                 res,
                 arrayDataLog,
-                startIndex,
-                endIndex,
                 page,
-                count,
-                limit,
                 nextPage,
                 previousPage,
+                limit,
+                rawData.count
             );
         }
+        console.log(req.query)
     });
 }
 

@@ -24,7 +24,7 @@ Vue.use(BootstrapVue)
 Vue.use(require('vue-moment'));
 Vue.use(VueScrollTo)
 
-axios.defaults.baseURL = 'https://dtractors.com.br/'
+axios.defaults.baseURL = ''
 
 new Vue({
   router,

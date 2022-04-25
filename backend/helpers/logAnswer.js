@@ -1,24 +1,20 @@
 const logAnswer =  (
 res,
 arrayLogVideo,
-startIndex,
-endIndex,
 page,
-totalResults,
-limit,
 nextPage,
 previousPage,
+limit,
+totalResults
 ) => {
-let totalPages = Math.ceil(totalResults / limit);
+  let totalPages = Math.ceil(totalResults / limit);
 const answer = res.status(200).json({
   data: arrayLogVideo,
-  startIndex,
-  endIndex,
   page,
-  totalPages,
   nextPage,
   previousPage,
-  totalResults,
+  totalPages,
+  totalResults
 });
 return answer;
 };

@@ -3,19 +3,19 @@
       <div v-if="info2.length">
        <Loading v-if="isLoading" />
       <div v-if="!isLoading">
-      <div id="up" class="row py-4">
+      <div id="up" class="row py-5">
         <div class="col-md-12 d-none d-lg-block">
           <h5 class="text-center">Found {{totalResults}} results divided into {{totalPages2}} pages. </h5>
         </div>
         <div class="col-sm-12 pt-5  d-sm-block d-md-none">
           <p class="text-center paraInfo">{{totalResults}} results in {{totalPages2}} pages.</p>
         </div>
-        <div v-if="isOnePage">
+        <div  v-if="isOnePage">
           <div class="col-md-12 offset-md-6 d-none d-lg-block pl-5">
             <span class="text-center navButton pl-4">
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="firstPage"><v-icon name="angle-double-left" scale="2"/></button>
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="previousPage"><v-icon name="angle-left" scale="2"/></button>
-              <span class="slide-font">Page {{currentPageServer}} </span>
+              <span class="slide-font">Page {{currentPageServer + 1}} </span>
               <button class="btn buttonSearch" :disabled='isNextDisable' @click="nextPage"><v-icon name="angle-right" scale="2"/></button>
               <button class="btn buttonSearch" @click="lastPage" :disabled='isNextDisable'><v-icon name="angle-double-right" scale="2"/></button>
             </span>
@@ -26,7 +26,7 @@
             <div class="text-center navButtonsm ">
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="firstPage"><v-icon name="angle-double-left" scale="2"/></button>
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="previousPage"><v-icon name="angle-left" scale="2"/></button>
-              <span class="paraInfo">Page {{currentPageServer}}</span>
+              <span class="paraInfo">Page {{currentPageServer + 1}}</span>
               <button class="btn buttonSearch" :disabled='isNextDisable' @click="nextPage"><v-icon name="angle-right" scale="2"/></button>
               <button class="btn buttonSearch" @click="lastPage" :disabled='isNextDisable'><v-icon name="angle-double-right" scale="2"/></button>
               <span class="navButtonsm pl-4"><input  @focus="checkInInput" @blur="checkOutInput" type="number" @change="noNegativeNumber" class="inputSearch inputSearchSm" name="pin" maxlength="3" size="3" v-model="selectedPageServer">
@@ -97,7 +97,7 @@
             <span class="text-center navButton pl-4">
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="firstPage"><v-icon name="angle-double-left" scale="2"/></button>
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="previousPage"><v-icon name="angle-left" scale="2"/></button>
-              <span class="slide-font">Page {{currentPageServer}} </span>
+              <span class="slide-font">Page {{currentPageServer + 1}} </span>
               <button class="btn buttonSearch" :disabled='isNextDisable' @click="nextPage"><v-icon name="angle-right" scale="2"/></button>
               <button class="btn buttonSearch" @click="lastPage" :disabled='isNextDisable'><v-icon name="angle-double-right" scale="2"/></button>
             </span>
@@ -108,7 +108,7 @@
             <div class="text-center navButtonsm ">
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="firstPage"><v-icon name="angle-double-left" scale="2"/></button>
               <button class="btn buttonSearch" :disabled='isPreviousDisable' @click="previousPage"><v-icon name="angle-left" scale="2"/></button>
-              <span class="paraInfo">Page {{currentPageServer}}</span>
+              <span class="paraInfo">Page {{currentPageServer +1}}</span>
               <button class="btn buttonSearch" :disabled='isNextDisable' @click="nextPage"><v-icon name="angle-right" scale="2"/></button>
               <button class="btn buttonSearch" @click="lastPage" :disabled='isNextDisable'><v-icon name="angle-double-right" scale="2"/></button>
               <span class="navButtonsm pl-4"><input @focus="checkInInput" @blur="checkOutInput" type="number" @change="noNegativeNumber" class="inputSearch inputSearchSm" name="pin" maxlength="3" size="3" v-model="selectedPageServer">
@@ -144,7 +144,7 @@ export default {
    components:{
      Loading
    },
-  props:['info2','page','limit','formUserName','formMessage','formHour','dateFrom','dateEnd','totalPages2','totalResults','subject'],
+  props:['info2','page','limit','formUserName','formMessage','formHour','dateFrom','dateEnd','totalPages2','totalResults','subject','queryUsername','queryMessage'],
  data(){
    return{
      info: [],
@@ -153,7 +153,7 @@ export default {
       nextPageServer: this.page + 1,
        previousPageServer:null,
       totalPagesServer: null,
-      currentPageServer: 1,
+      currentPageServer: 0,
       selectedPageServer:'',
       isNextDisable: false,
       isPreviousDisable: true,
@@ -175,7 +175,9 @@ export default {
           dateEnd: this.dateEnd
         },{params:{
           page: this.nextPageServer,
-          limit: this.limit
+          limit: this.limit,
+          userName: this.queryUsername,
+          message:this.queryMessage
         }})
         .then((data)=>{
            this.info2 = data.data.data
@@ -187,8 +189,8 @@ export default {
              this.isNextDisable = false
               this.isPreviousDisable = false
              this.totalPagesServer = data.data.totalPages
-            if(this.nextPageServer >= data.data.totalPages){
-              this.nextPageServer = data.data.totalPages
+            if(this.nextPageServer >= data.data.totalPages -1){
+              this.nextPageServer = data.data.totalPages -1
               this.currentPageServer = this.nextPageServer
               this.selectedPageServer = ''
               this.isNextDisable = true
@@ -200,7 +202,6 @@ export default {
                this.isNextDisable = false
               this.isPreviousDisable = false
             }
-         
         })
    },
    previousPage(){
@@ -214,7 +215,9 @@ export default {
           dateEnd: this.dateEnd
         },{params:{
           page: this.previousPageServer,
-          limit: this.limit
+          limit: this.limit,
+          userName: this.queryUsername,
+          message:this.queryMessage
         }})
         .then((data)=>{
            this.info2 = data.data.data
@@ -222,11 +225,11 @@ export default {
            this.nextPageServer = data.data.nextPage
             this.isLoading = false
             this.showScrollButton = true
-             this.currentPageServer =1
+             this.currentPageServer = 0
              this.selectedPageServer = ''
               this.isNextDisable = false
               this.isPreviousDisable = false
-           if(this.previousPageServer === 1){
+           if(this.previousPageServer === 0){
              this.previousPageServer = 1
              this.isNextDisable = false
               this.isPreviousDisable = true
@@ -249,8 +252,10 @@ export default {
           dateFrom: this.dateFrom,
           dateEnd: this.dateEnd
         },{params:{
-          page: 1,
-          limit: this.limit
+          page: 0,
+          limit: this.limit,
+          userName: this.queryUsername,
+          message:this.queryMessage
         }})
         .then((data)=>{
            this.info2 = data.data.data
@@ -258,7 +263,7 @@ export default {
            this.nextPageServer = data.data.nextPage
            this.isLoading = false
            this.showScrollButton = true
-           this.currentPageServer = 1
+           this.currentPageServer = 0
             this.previousPageServer = 1
             this.isNextDisable = false
             this.isPreviousDisable = true
@@ -275,15 +280,17 @@ export default {
           dateFrom: this.dateFrom,
           dateEnd: this.dateEnd
         },{params:{
-          page: this.totalPages2,
-          limit: this.limit
+          page: this.totalPages2 -1,
+          limit: this.limit,
+          userName: this.queryUsername,
+          message:this.queryMessage
         }})
         .then((data)=>{
           this.info2 = data.data.data
           this.totalPagesServer = data.data.totalPages
           this.previousPageServer = data.data.previousPage
           this.nextPageServer = this.totalPagesServer 
-          this.currentPageServer = this.nextPageServer
+          this.currentPageServer = this.nextPageServer -1
           this.isLoading = false
           this.showScrollButton = true
           this.isNextDisable = true
@@ -315,8 +322,10 @@ export default {
           dateFrom: this.dateFrom,
           dateEnd: this.dateEnd
         },{params:{
-          page: this.selectedPageServer,
-          limit: this.limit
+          page: this.selectedPageServer -1 ,
+          limit: this.limit,
+          userName: this.queryUsername,
+          message:this.queryMessage
         }})
         .then((data)=>{
           this.isLoading = false
@@ -324,11 +333,10 @@ export default {
           this.isInputEmpty = true
           this.info2 = data.data.data
           this.totalPagesServer = data.data.totalPages
-          this.nextPageServer = data.data.nextPage
-          this.currentPageServer = this.selectedPageServer
+          this.nextPageServer = data.data.nextPage 
+          this.currentPageServer = parseInt(this.selectedPageServer) -1
           this.previousPageServer = data.data.previousPage
           this.selectedPageServer = ''
-          
         })
   },
    resetar(){
@@ -342,9 +350,9 @@ export default {
       },
       toogleTabs(){
         if(this.toogleTable){
-          this.viewMessage = "Cards"
-        }else{
           this.viewMessage = "Table"
+        }else{
+          this.viewMessage = "Cards"
         }
       },
        checkInInput(){

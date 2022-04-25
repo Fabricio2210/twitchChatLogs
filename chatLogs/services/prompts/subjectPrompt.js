@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+const inquirer = require("inquirer");
 const saveData = require("../scrapLogs/saveData");
 require("dotenv").config();
 
