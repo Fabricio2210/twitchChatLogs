@@ -1,8 +1,8 @@
-const paginationInfo = require('../../helpers/chatLogs/paginationInfo.js');
-const queryLogs = require('../../helpers/chatLogs/query');
-const logRawInfo = require('../../helpers/chatLogs/logRawInfo');
-const parseLogInfo = require('../../helpers/chatLogs/parseLogInfo');
-const logAnswer = require('../../helpers/chatLogs/logAnswer');
+const paginationInfo = require('../helpers/paginationInfo.js');
+const queryLogs = require('../helpers/query');
+const logRawInfo = require('../helpers/logRawInfo');
+const parseLogInfo = require('../helpers/parseLogInfo');
+const logAnswer = require('../helpers/logAnswer');
 
 const defaultRouter = async (router,subject) =>{
     router.post(`/${subject}`,async (req,res)=>{
