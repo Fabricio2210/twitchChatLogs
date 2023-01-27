@@ -28,7 +28,7 @@ Vue.use(require('vue-moment'));
 Vue.use(VueScrollTo)
 Vue.prototype.$Themes = new Themes();
 
-axios.defaults.baseURL = 'https://392a-2804-14d-5c73-6bc4-fc28-a85f-4b5c-918f.sa.ngrok.io'
+axios.defaults.baseURL = ''
 
 new Vue({
   router,
