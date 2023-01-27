@@ -1,5 +1,5 @@
 # twitchChatLogs
-Twitch Chat Logs is a search engine for the log files from a Twitch chat channel.
+Archive Chat Logs is a search engine for the log files from  Twitch and Youtube chat channels.
 
 ## Installation
 * Install [elasticsearch](https://www.elastic.co/).
