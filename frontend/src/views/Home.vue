@@ -1,28 +1,51 @@
 <template>
-  <div class="container">
-      <b-col>
-        <FormSearch class="animated fadeIn" @info-video="passData" v-if="ifNoData"/>
-      </b-col>
-      <b-col class="pt-2">
-        <TableContent v-if="ifData" :info2.sync="info" :page="page" :limit="limit" :formUserName="formUserName" :formMessage="formMessage" :formHour="formHour" :dateFrom="dateFrom" :dateEnd="dateEnd" :totalPages2="totalPages" :totalResults="totalResults" :subject="subject" :queryUsername="queryUsername" :queryMessage="queryMessage" />
-      </b-col>
-    
+  <div class="main">
+    <b-col md="6" offset-md="5" class="pt-4">
+      <DarkMode class="animated fadeIn" />
+    </b-col>
+    <b-col>
+      <FormSearch
+        class="animated fadeIn"
+        @info-video="passData"
+        v-if="ifNoData"
+      />
+    </b-col>
+    <b-col class="pt-2">
+      <TableContent
+        v-if="ifData"
+        :info2.sync="info"
+        :page="page"
+        :limit="limit"
+        :formUserName="formUserName"
+        :formMessage="formMessage"
+        :formHour="formHour"
+        :dateFrom="dateFrom"
+        :dateEnd="dateEnd"
+        :totalPages2="totalPages"
+        :totalResults="totalResults"
+        :subject="subject"
+        :queryUsername="queryUsername"
+        :queryMessage="queryMessage"
+      />
+    </b-col>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import FormSearch from '@/components/FormSearch.vue'
-import TableContent from '@/components/TableContent.vue'
+import FormSearch from "@/components/FormSearch.vue";
+import TableContent from "@/components/TableContent.vue";
+import DarkMode from "@/components/DarkMode.vue";
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
-   FormSearch,
-   TableContent
+    FormSearch,
+    TableContent,
+    DarkMode,
   },
-  data(){
-    return{
+  data() {
+    return {
       ifData: false,
       ifNoData: true,
       info: null,
@@ -37,27 +60,33 @@ export default {
       totalResults: null,
       subject: null,
       queryUsername: null,
-      queryMessage: null
-    }
+      queryMessage: null,
+    };
   },
-  methods:{
-    passData(...data){
+  methods: {
+    passData(...data) {
       this.info = data[0];
       this.page = data[1];
       this.limit = data[2];
       this.formUserName = data[3];
       this.formMessage = data[4];
-      this.formHour = data[5],
-      this.dateFrom = data[6];
+      (this.formHour = data[5]), (this.dateFrom = data[6]);
       this.dateEnd = data[7];
-      this.totalPages = data[8],
-      this.totalResults = data[9]
+      (this.totalPages = data[8]), (this.totalResults = data[9]);
       this.ifNoData = false;
-      this.subject = data[10],
-      this.queryUsername = data[11],
-      this.queryMessage = data[12],
-      this.ifData = true;
+      (this.subject = data[10]),
+        (this.queryUsername = data[11]),
+        (this.queryMessage = data[12]),
+        (this.ifData = true);
+    },
+  },
+  mounted() {
+    if (localStorage.theme === "light") {
+      document.body.style.backgroundColor = "#f4f9fe";
     }
-  }
-}
+    if (localStorage.theme === "dark") {
+      document.body.style.backgroundColor = "#2D3238";
+    }
+  },
+};
 </script>
