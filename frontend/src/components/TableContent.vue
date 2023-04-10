@@ -165,7 +165,7 @@
             <table class="table-bordered" style="width: 1080px !important">
               <thead>
                 <tr class="">
-                  <th class="userTable" scope="col">User</th>
+                  <th class="px-5 text-center" scope="col">User</th>
                   <th class="px-5" scope="col">Day</th>
                   <th class="px-5" scope="col">Timestamp</th>
                   <th class="px-5 text-center" scope="col">Message</th>
@@ -384,7 +384,7 @@
       </div>
     </div>
     <div v-else class="row py-4">
-      <div class="col-md-11 py-5 text-dark">
+      <div class="col-md-11 py-5 textError">
         <h1 class="text-center d-none d-lg-block">Nothing Found</h1>
         <h4 class="text-center d-sm-block d-md-none">Nothing Found</h4>
         <b-button @click="resetar" class="resetButton" block variant="primary"
@@ -451,169 +451,89 @@ export default {
     };
   },
   methods: {
-    nextPage() {
+    async getData(page) {
       this.isLoading = true;
       this.showScrollButton = false;
-      axios
-        .post(
-          `${this.subject}`,
-          {
-            userName: this.formUserName,
-            message: this.formMessage,
-            hour: this.formHour,
-            dateFrom: this.dateFrom,
-            dateEnd: this.dateEnd,
+      let data = await axios.post(
+        `${this.subject}`,
+        {
+          userName: this.formUserName,
+          message: this.formMessage,
+          hour: this.formHour,
+          dateFrom: this.dateFrom,
+          dateEnd: this.dateEnd,
+        },
+        {
+          params: {
+            page,
+            limit: this.limit,
+            userName: this.queryUsername,
+            message: this.queryMessage,
           },
-          {
-            params: {
-              page: this.nextPageServer,
-              limit: this.limit,
-              userName: this.queryUsername,
-              message: this.queryMessage,
-            },
-          }
-        )
-        .then((data) => {
-          this.info2 = data.data.data;
-          this.totalPagesServer = data.data.totalPages;
-          this.isLoading = false;
-          this.showScrollButton = true;
-          this.previousPageServer = data.data.previousPage;
-          this.selectedPageServer = "";
-          this.isNextDisable = false;
-          this.isPreviousDisable = false;
-          this.totalPagesServer = data.data.totalPages;
-          if (this.nextPageServer >= data.data.totalPages - 1) {
-            this.nextPageServer = data.data.totalPages - 1;
-            this.currentPageServer = this.nextPageServer;
-            this.selectedPageServer = "";
-            this.isNextDisable = true;
-            this.isPreviousDisable = false;
-          } else {
-            this.nextPageServer = data.data.nextPage;
-            this.currentPageServer = this.nextPageServer - 1;
-            this.selectedPageServer = "";
-            this.isNextDisable = false;
-            this.isPreviousDisable = false;
-          }
-        });
+        }
+      );
+      this.info2 = data.data.data;
+      this.isLoading = false;
+      this.showScrollButton = true;
+      this.totalPagesServer = data.data.totalPages;
+      return data;
     },
-    previousPage() {
-      this.isLoading = true;
-      this.showScrollButton = false;
-      axios
-        .post(
-          `${this.subject}`,
-          {
-            userName: this.formUserName,
-            message: this.formMessage,
-            hour: this.formHour,
-            dateFrom: this.dateFrom,
-            dateEnd: this.dateEnd,
-          },
-          {
-            params: {
-              page: this.previousPageServer,
-              limit: this.limit,
-              userName: this.queryUsername,
-              message: this.queryMessage,
-            },
-          }
-        )
-        .then((data) => {
-          this.info2 = data.data.data;
-          this.totalPagesServer = data.data.totalPages;
-          this.nextPageServer = data.data.nextPage;
-          this.isLoading = false;
-          this.showScrollButton = true;
-          this.currentPageServer = 0;
-          this.selectedPageServer = "";
-          this.isNextDisable = false;
-          this.isPreviousDisable = false;
-          if (this.previousPageServer === 0) {
-            this.previousPageServer = 1;
-            this.isNextDisable = false;
-            this.isPreviousDisable = true;
-          } else {
-            this.previousPageServer = data.data.previousPage;
-            this.currentPageServer = this.previousPageServer + 1;
-            this.selectedPageServer = "";
-            this.isNextDisable = false;
-            this.isPreviousDisable = false;
-          }
-        });
+    async nextPage() {
+      let data = await this.getData(this.nextPageServer);
+      this.previousPageServer = data.data.previousPage;
+      this.selectedPageServer = "";
+      this.isNextDisable = false;
+      this.isPreviousDisable = false;
+      if (this.nextPageServer >= data.data.totalPages - 1) {
+        this.nextPageServer = data.data.totalPages - 1;
+        this.currentPageServer = this.nextPageServer;
+        this.selectedPageServer = "";
+        this.isNextDisable = true;
+        this.isPreviousDisable = false;
+      } else {
+        this.nextPageServer = data.data.nextPage;
+        this.currentPageServer = this.nextPageServer - 1;
+        this.selectedPageServer = "";
+        this.isNextDisable = false;
+        this.isPreviousDisable = false;
+      }
     },
-    firstPage() {
-      this.isLoading = true;
-      this.showScrollButton = false;
-      axios
-        .post(
-          `${this.subject}`,
-          {
-            userName: this.formUserName,
-            message: this.formMessage,
-            hour: this.formHour,
-            dateFrom: this.dateFrom,
-            dateEnd: this.dateEnd,
-          },
-          {
-            params: {
-              page: 0,
-              limit: this.limit,
-              userName: this.queryUsername,
-              message: this.queryMessage,
-            },
-          }
-        )
-        .then((data) => {
-          this.info2 = data.data.data;
-          this.totalPagesServer = data.data.totalPages;
-          this.nextPageServer = data.data.nextPage;
-          this.isLoading = false;
-          this.showScrollButton = true;
-          this.currentPageServer = 0;
-          this.previousPageServer = 1;
-          this.isNextDisable = false;
-          this.isPreviousDisable = true;
-        });
+    async previousPage() {
+      let data = await this.getData(this.previousPageServer);
+      this.nextPageServer = data.data.nextPage;
+      this.currentPageServer = 0;
+      this.selectedPageServer = "";
+      this.isNextDisable = false;
+      this.isPreviousDisable = false;
+      if (this.previousPageServer === 0) {
+        this.previousPageServer = 1;
+        this.isNextDisable = false;
+        this.isPreviousDisable = true;
+      } else {
+        this.previousPageServer = data.data.previousPage;
+        this.currentPageServer = this.previousPageServer + 1;
+        this.selectedPageServer = "";
+        this.isNextDisable = false;
+        this.isPreviousDisable = false;
+      }
     },
-    lastPage() {
-      this.isLoading = true;
-      this.showScrollButton = false;
-      axios
-        .post(
-          `${this.subject}`,
-          {
-            userName: this.formUserName,
-            message: this.formMessage,
-            hour: this.formHour,
-            dateFrom: this.dateFrom,
-            dateEnd: this.dateEnd,
-          },
-          {
-            params: {
-              page: this.totalPages2 - 1,
-              limit: this.limit,
-              userName: this.queryUsername,
-              message: this.queryMessage,
-            },
-          }
-        )
-        .then((data) => {
-          this.info2 = data.data.data;
-          this.totalPagesServer = data.data.totalPages;
-          this.previousPageServer = data.data.previousPage;
-          this.nextPageServer = this.totalPagesServer;
-          this.currentPageServer = this.nextPageServer - 1;
-          this.isLoading = false;
-          this.showScrollButton = true;
-          this.isNextDisable = true;
-          this.isPreviousDisable = false;
-        });
+    async firstPage() {
+      let data = await this.getData(0);
+      this.nextPageServer = data.data.nextPage;
+      this.currentPageServer = 0;
+      this.previousPageServer = 1;
+      this.isNextDisable = false;
+      this.isPreviousDisable = true;
     },
-    goToPageServer() {
-      this.isLoading = true;
-      this.showScrollButton = false;
+    async lastPage() {
+      let data = await this.getData(this.totalPages2 - 1);
+      this.previousPageServer = data.data.previousPage;
+      this.nextPageServer = this.totalPagesServer;
+      this.currentPageServer = this.nextPageServer - 1;
+      this.isNextDisable = true;
+      this.isPreviousDisable = false;
+    },
+    async goToPageServer() {
       if (parseInt(this.selectedPageServer) >= this.totalPages2) {
         this.selectedPageServer = this.totalPages2;
         this.nextPageServer = this.totalPages2;
@@ -628,36 +548,12 @@ export default {
         this.isNextDisable = false;
         this.isPreviousDisable = false;
       }
-      axios
-        .post(
-          `${this.subject}`,
-          {
-            userName: this.formUserName,
-            message: this.formMessage,
-            hour: this.formHour,
-            dateFrom: this.dateFrom,
-            dateEnd: this.dateEnd,
-          },
-          {
-            params: {
-              page: this.selectedPageServer - 1,
-              limit: this.limit,
-              userName: this.queryUsername,
-              message: this.queryMessage,
-            },
-          }
-        )
-        .then((data) => {
-          this.isLoading = false;
-          this.showScrollButton = true;
-          this.isInputEmpty = true;
-          this.info2 = data.data.data;
-          this.totalPagesServer = data.data.totalPages;
-          this.nextPageServer = data.data.nextPage;
-          this.currentPageServer = parseInt(this.selectedPageServer) - 1;
-          this.previousPageServer = data.data.previousPage;
-          this.selectedPageServer = "";
-        });
+      let data = await this.getData(this.selectedPageServer - 1);
+      this.isInputEmpty = true;
+      this.nextPageServer = data.data.nextPage;
+      this.currentPageServer = parseInt(this.selectedPageServer) - 1;
+      this.previousPageServer = data.data.previousPage;
+      this.selectedPageServer = "";
     },
     resetar() {
       window.location.reload();
