@@ -497,6 +497,30 @@ export default {
         this.currentPageServer = page;
         this.nextPageServer = data.data.nextPage;
       }
+      if (this.selectedPageServer !== "") {
+        let selectedPage = parseInt(this.selectedPageServer) - 1;
+        if (selectedPage >= data.data.totalPages - 1) {
+          selectedPage = data.data.totalPages - 1;
+          this.selectedPageServer = selectedPage + 1;
+          this.nextPageServer = this.selectedPageServer;
+          this.isNextDisable = true;
+          this.isPreviousDisable = false;
+        } else if (selectedPage <= 0) {
+          selectedPage = 0;
+          this.selectedPageServer = selectedPage + 1;
+          this.previousPageServer = this.selectedPageServer;
+          this.isNextDisable = false;
+          this.isPreviousDisable = true;
+        } else {
+          this.isNextDisable = false;
+          this.isPreviousDisable = false;
+        }
+        data = await this.getData(selectedPage);
+        this.currentPageServer = selectedPage;
+        this.previousPageServer = data.data.previousPage;
+        this.nextPageServer = data.data.nextPage;
+        this.selectedPageServer = "";
+      }
       return data;
     },
     async nextPage() {
@@ -512,26 +536,7 @@ export default {
       await this.getPageData(this.totalPages - 1);
     },
     async goToPageServer() {
-      if (parseInt(this.selectedPageServer) >= this.totalPages) {
-        this.selectedPageServer = this.totalPages;
-        this.nextPageServer = this.totalPages;
-        this.isNextDisable = true;
-        this.isPreviousDisable = false;
-      } else if (parseInt(this.selectedPageServer) <= 1) {
-        this.selectedPageServer = 1;
-        this.previousPageServer = 1;
-        this.isNextDisable = false;
-        this.isPreviousDisable = true;
-      } else {
-        this.isNextDisable = false;
-        this.isPreviousDisable = false;
-      }
-      let data = await this.getData(this.selectedPageServer - 1);
-      this.isInputEmpty = true;
-      this.nextPageServer = data.data.nextPage;
-      this.currentPageServer = parseInt(this.selectedPageServer) - 1;
-      this.previousPageServer = data.data.previousPage;
-      this.selectedPageServer = "";
+      await this.getPageData(this.selectedPageServer - 1);
     },
     reset() {
       window.location.reload();
