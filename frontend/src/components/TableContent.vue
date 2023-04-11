@@ -489,13 +489,11 @@ export default {
         this.currentPageServer = this.nextPageServer;
         this.selectedPageServer = "";
         this.isNextDisable = true;
-        this.isPreviousDisable = false;
       } else {
         this.nextPageServer = data.data.nextPage;
         this.currentPageServer = this.nextPageServer - 1;
         this.selectedPageServer = "";
         this.isNextDisable = false;
-        this.isPreviousDisable = false;
       }
     },
     async previousPage() {
@@ -507,13 +505,11 @@ export default {
       this.isPreviousDisable = false;
       if (this.previousPageServer === 0) {
         this.previousPageServer = 1;
-        this.isNextDisable = false;
         this.isPreviousDisable = true;
       } else {
         this.previousPageServer = data.data.previousPage;
         this.currentPageServer = this.previousPageServer + 1;
         this.selectedPageServer = "";
-        this.isNextDisable = false;
         this.isPreviousDisable = false;
       }
     },
