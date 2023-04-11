@@ -1,18 +1,18 @@
 <template>
   <div class="animated fadeIn">
-    <div v-if="info2.length">
+    <div v-if="info.length">
       <Loading v-if="isLoading" />
       <div v-if="!isLoading">
         <div id="up" class="row py-5">
           <div class="col-md-12 d-none d-lg-block">
             <h5 class="text-center">
               Found {{ totalResults }} results divided into
-              {{ totalPages2 }} pages.
+              {{ totalPages }} pages.
             </h5>
           </div>
           <div class="col-sm-12 pt-5 d-sm-block d-md-none">
             <p class="text-center paraInfo">
-              {{ totalResults }} results in {{ totalPages2 }} pages.
+              {{ totalResults }} results in {{ totalPages }} pages.
             </p>
           </div>
           <div v-if="isOnePage">
@@ -147,7 +147,7 @@
               </div>
             </div>
           </div>
-          <b-button @click="resetar" class="resetButton" block variant="primary"
+          <b-button @click="reset" class="resetButton" block variant="primary"
             >New Search</b-button
           >
           <b-form-checkbox
@@ -172,7 +172,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="data in info2" v-bind:key="data.id">
+                <tr v-for="data in info" v-bind:key="data.id">
                   <td class="text-center">{{ data.userName }}</td>
                   <td class="text-center">
                     {{ data.logDay | moment("MM/DD/YYYY") }}
@@ -185,7 +185,7 @@
           </div>
           <div
             class="col-md-4 d-none d-lg-block"
-            v-for="data in info2"
+            v-for="data in info"
             v-bind:key="data.id"
           >
             <div v-if="!toogleTable" class="animated fadeIn">
@@ -208,7 +208,7 @@
           </div>
           <div
             class="col-md-6 d-sm-block d-md-none animated fadeIn"
-            v-for="data in info2"
+            v-for="data in info"
             v-bind:key="data.id"
           >
             <div v-if="!toogleTable" class="animated fadeIn">
@@ -237,12 +237,12 @@
           <div class="col-md-12 d-none d-lg-block">
             <h5 class="text-center">
               Found {{ totalResults }} results divided into
-              {{ totalPages2 }} pages.
+              {{ totalPages }} pages.
             </h5>
           </div>
           <div class="col-sm-12 d-sm-block d-md-none">
             <p class="text-center paraInfo">
-              {{ totalResults }} results in {{ totalPages2 }} pages.
+              {{ totalResults }} results in {{ totalPages }} pages.
             </p>
           </div>
           <div v-if="isOnePage">
@@ -377,7 +377,7 @@
               </div>
             </div>
           </div>
-          <b-button @click="resetar" class="resetButton" block variant="primary"
+          <b-button @click="reset" class="resetButton" block variant="primary"
             >New Search</b-button
           >
         </div>
@@ -387,7 +387,7 @@
       <div class="col-md-11 py-5 textError">
         <h1 class="text-center d-none d-lg-block">Nothing Found</h1>
         <h4 class="text-center d-sm-block d-md-none">Nothing Found</h4>
-        <b-button @click="resetar" class="resetButton" block variant="primary"
+        <b-button @click="reset" class="resetButton" block variant="primary"
           >New Search</b-button
         >
       </div>
@@ -418,7 +418,7 @@ export default {
     Loading,
   },
   props: [
-    "info2",
+    "info",
     "page",
     "limit",
     "formUserName",
@@ -426,7 +426,7 @@ export default {
     "formHour",
     "dateFrom",
     "dateEnd",
-    "totalPages2",
+    "totalPages",
     "totalResults",
     "subject",
     "queryUsername",
@@ -434,7 +434,6 @@ export default {
   ],
   data() {
     return {
-      info: [],
       isLoading: false,
       showScrollButton: true,
       nextPageServer: this.page + 1,
@@ -472,67 +471,50 @@ export default {
           },
         }
       );
-      this.info2 = data.data.data;
+      this.info = data.data.data;
       this.isLoading = false;
       this.showScrollButton = true;
       this.totalPagesServer = data.data.totalPages;
       return data;
     },
-    async nextPage() {
-      let data = await this.getData(this.nextPageServer);
+
+    async getPageData(page) {
+      let data = await this.getData(page);
       this.previousPageServer = data.data.previousPage;
+      this.nextPageServer = data.data.nextPage;
       this.selectedPageServer = "";
       this.isNextDisable = false;
       this.isPreviousDisable = false;
-      if (this.nextPageServer >= data.data.totalPages - 1) {
+      if (page === 0) {
+        this.isPreviousDisable = true;
+        this.previousPageServer = 1;
+      }
+      if (page >= data.data.totalPages - 1) {
         this.nextPageServer = data.data.totalPages - 1;
         this.currentPageServer = this.nextPageServer;
-        this.selectedPageServer = "";
         this.isNextDisable = true;
       } else {
+        this.currentPageServer = page;
         this.nextPageServer = data.data.nextPage;
-        this.currentPageServer = this.nextPageServer - 1;
-        this.selectedPageServer = "";
-        this.isNextDisable = false;
       }
+      return data;
+    },
+    async nextPage() {
+      await this.getPageData(this.nextPageServer);
     },
     async previousPage() {
-      let data = await this.getData(this.previousPageServer);
-      this.nextPageServer = data.data.nextPage;
-      this.currentPageServer = 0;
-      this.selectedPageServer = "";
-      this.isNextDisable = false;
-      this.isPreviousDisable = false;
-      if (this.previousPageServer === 0) {
-        this.previousPageServer = 1;
-        this.isPreviousDisable = true;
-      } else {
-        this.previousPageServer = data.data.previousPage;
-        this.currentPageServer = this.previousPageServer + 1;
-        this.selectedPageServer = "";
-        this.isPreviousDisable = false;
-      }
+      await this.getPageData(this.previousPageServer);
     },
     async firstPage() {
-      let data = await this.getData(0);
-      this.nextPageServer = data.data.nextPage;
-      this.currentPageServer = 0;
-      this.previousPageServer = 1;
-      this.isNextDisable = false;
-      this.isPreviousDisable = true;
+      await this.getPageData(0);
     },
     async lastPage() {
-      let data = await this.getData(this.totalPages2 - 1);
-      this.previousPageServer = data.data.previousPage;
-      this.nextPageServer = this.totalPagesServer;
-      this.currentPageServer = this.nextPageServer - 1;
-      this.isNextDisable = true;
-      this.isPreviousDisable = false;
+      await this.getPageData(this.totalPages - 1);
     },
     async goToPageServer() {
-      if (parseInt(this.selectedPageServer) >= this.totalPages2) {
-        this.selectedPageServer = this.totalPages2;
-        this.nextPageServer = this.totalPages2;
+      if (parseInt(this.selectedPageServer) >= this.totalPages) {
+        this.selectedPageServer = this.totalPages;
+        this.nextPageServer = this.totalPages;
         this.isNextDisable = true;
         this.isPreviousDisable = false;
       } else if (parseInt(this.selectedPageServer) <= 1) {
@@ -551,7 +533,7 @@ export default {
       this.previousPageServer = data.data.previousPage;
       this.selectedPageServer = "";
     },
-    resetar() {
+    reset() {
       window.location.reload();
     },
 
@@ -579,7 +561,7 @@ export default {
     },
   },
   mounted() {
-    if (this.info2.length < this.limit) {
+    if (this.info.length < this.limit) {
       this.isOnePage = false;
     }
     this.viewMessage = "Table";

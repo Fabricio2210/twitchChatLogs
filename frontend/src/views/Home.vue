@@ -13,7 +13,7 @@
     <b-col class="pt-2">
       <TableContent
         v-if="ifData"
-        :info2.sync="info"
+        :info.sync="info"
         :page="page"
         :limit="limit"
         :formUserName="formUserName"
@@ -21,7 +21,7 @@
         :formHour="formHour"
         :dateFrom="dateFrom"
         :dateEnd="dateEnd"
-        :totalPages2="totalPages"
+        :totalPages="totalPages"
         :totalResults="totalResults"
         :subject="subject"
         :queryUsername="queryUsername"
